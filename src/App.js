@@ -3,7 +3,7 @@ import TodoList from "./Todo/TodoList"
 
 
 function App() {
-  let [todos, setTodos] = useState(
+  const [todos, setTodos] = useState(
     [
       {
         id: 1,
@@ -28,17 +28,31 @@ function App() {
       },
     ])
 
-  function toggleTodo(id) {
+  function editItem({id, title, content}) {
     setTodos
       (todos.map(todo => {
         if (todo.id === id) {
-          todo.showContent = !todo.showContent
+          todo.title = title
+          todo.content = content
         }
         return todo
       })
     )
   }
 
+  function deleteItem(ids) {
+    console.log(ids)
+    let temp = []
+    ids.forEach(id =>
+      (todos.map(todo => {
+        if (todo.id != id) {
+          temp.push(todo)
+        }
+      })
+    )
+  )
+    setTodos(temp)
+  }
 
   return <div className='wrapper'>
     <h1 className='page-title'>Fusionsoft test-task</h1>
@@ -48,7 +62,9 @@ function App() {
     </div>
 
 
-    <TodoList todos={todos} onToggle={toggleTodo}/>
+    <TodoList todos={todos} editItem={editItem} deleteItem={deleteItem} edit={false}/>
+
+    <TodoList todos={todos} editItem={editItem} deleteItem={deleteItem} edit={true}/>
   </div>
 }
 
