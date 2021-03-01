@@ -1,29 +1,27 @@
 import React, {useState} from 'react'
-import TodoList from "./Todo/TodoList"
-
+import TodoList from './Todo/TodoList'
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom'
 
 function App() {
+
+  const [currentPath, setCurrentPath] = useState('default')
+  console.log(currentPath)
+
   const [todos, setTodos] = useState(
     [
       {
-        id: 1,
-        editable: false,
+        id: 'py7sdbe1t4',
         title: 'Lorem 1',
-        showContent: false,
         content: 'Lorem 1 ipsum dolor sit amet, consectetur adipisicing elit.'
       },
       {
-        id: 2,
-        editable: false,
+        id: 'x2qxscrglf',
         title: 'Lorem 2',
-        showContent: false,
         content: 'Lorem 2 ipsum dolor sit amet, consectetur adipisicing elit.'
       },
       {
-        id: 3,
-        editable: false,
+        id: '1maegz4jn8',
         title: 'Lorem 3',
-        showContent: false,
         content: 'Lorem 3 ipsum dolor sit amet, consectetur adipisicing elit.'
       },
     ])
@@ -43,29 +41,61 @@ function App() {
   function deleteItem(ids) {
     console.log(ids)
     let temp = []
-    ids.forEach(id =>
-      (todos.map(todo => {
-        if (todo.id != id) {
-          temp.push(todo)
-        }
-      })
+    todos.forEach(todo => {
+      if ( !ids.includes(todo.id)) {
+        temp.push(todo)
+        console.log(todo.id, ids.includes(todo.id))
+      }}
     )
-  )
     setTodos(temp)
   }
 
-  return <div className='wrapper'>
-    <h1 className='page-title'>Fusionsoft test-task</h1>
-    <div className="pages-link">
-      <a className='link link-active' href="#">lorems-readonly</a>
-      <a className='link' href="#">lorems-edit</a>
-    </div>
+  function addItem() {
+    let tempItems = todos
+    console.log(tempItems)
+    setTodos([...todos, {id: Math.random().toString(36).substr(2, 10), title: 'default', content: 'default'}]
+    )
+  }
 
-
-    <TodoList todos={todos} editItem={editItem} deleteItem={deleteItem} edit={false}/>
-
-    <TodoList todos={todos} editItem={editItem} deleteItem={deleteItem} edit={true}/>
-  </div>
-}
+  return (
+    <Router>
+      <div className='wrapper'>
+        <h1 className='page-title'>
+          Fusionsoft test-task
+        </h1>
+        <div className='pages-link'>
+          <Link className={`link ${currentPath === 'view' ? 'link-active' : ''}`} to='/'>
+            lorems-readonly
+          </Link>
+          <Link className={`link ${currentPath === 'edit' ? 'link-active' : ''}`} to='/edit'>
+            lorems-edit
+          </Link>
+        </div>
+        <Switch>
+          <Redirect exact from='/' to='/view'/>
+          <Route exact path='/view'>
+            <TodoList
+                     todos={todos}
+                     editItem={editItem}
+                     deleteItem={deleteItem}
+                     addItem={addItem}
+                     setCurrentPath={setCurrentPath}
+                     edit={false}
+            />
+          </Route>
+          <Route exact path='/edit'>
+            <TodoList
+                     todos={todos}
+                     editItem={editItem}
+                     deleteItem={deleteItem}
+                     addItem={addItem}
+                     setCurrentPath={setCurrentPath}
+                     edit={true}
+            />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+)}
 
 export default App;

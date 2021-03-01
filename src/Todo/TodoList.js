@@ -1,8 +1,15 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
-import TodoItem from "./TodoItem";
+import TodoItem from './TodoItem'
+import {useLocation} from 'react-router-dom'
 
-function TodoList ({todos, id, edit, editItem, deleteItem}) {
+function TodoList({todos = [], id, edit, editItem, deleteItem, addItem, setCurrentPath}) {
+
+  const location = useLocation()
+
+  useEffect(() => {
+    setCurrentPath(location.pathname.split('/').slice(-1).pop())
+  })
 
   const [check, setCheck] = useState(
     {}
@@ -24,16 +31,29 @@ function TodoList ({todos, id, edit, editItem, deleteItem}) {
           editItem={editItem}
         />
       })}
-    {edit && <div className="list-btn">
-      <div className="checkbox-btn">
-        {Object.values(check).includes(true) && <><button onClick={() => setCheck({})}>сбросить</button>
-        <button onClick={() => deleteItem(Object.keys(check))}>удалить</button></>}
-      </div>
-      <div className="edit-btn">
-        <button>отменить</button>
-        <button>сохранить</button>
-      </div>
-    </div>}
+      {edit && <div className='list-btn'>
+        <div className='checkbox-btn'>
+          {Object.values(check).includes(true) && <>
+            <button
+                   onClick={() => setCheck({})}
+            >сбросить
+            </button>
+            <button
+                   onClick={() => {
+                     deleteItem(Object.keys(check));
+                     setCheck({})
+                   }}
+            >удалить
+            </button>
+          </>}
+        </div>
+        <div className='edit-btn'>
+          <button
+                 onClick={addItem}
+          >добавить
+          </button>
+        </div>
+      </div>}
     </section>
   )
 }
@@ -41,7 +61,9 @@ function TodoList ({todos, id, edit, editItem, deleteItem}) {
 TodoList.propTypes = {
   todos: PropTypes.arrayOf(PropTypes.object).isRequired,
   onSetActiveItems: PropTypes.func.isRequired,
-  editItem: PropTypes.func.isRequired
+  editItem: PropTypes.func.isRequired,
+  deleteItem: PropTypes.func.isRequired,
+  addItem: PropTypes.func.isRequired
 }
 
 export default TodoList
