@@ -1,66 +1,85 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import TodoItem from './TodoItem'
-import {useLocation} from 'react-router-dom'
 
-function TodoList({todos = [], id, edit, editItem, deleteItem, addItem, setCurrentPath}) {
-
-  const location = useLocation()
-
-  useEffect(() => {
-    setCurrentPath(location.pathname.split('/').slice(-1).pop())
-  })
+function TodoList({todos = [], edit, editItem, deleteItem, addItem}) {
 
   const [check, setCheck] = useState(
-    {}
+      {}
   )
 
   const onSetActiveItems = (id) => {
     setCheck({...check, [id]: !check[id]})
   }
 
+  const onSetAllActiveItems = () => {
+    const tempObj = {}
+    todos.forEach(item => {
+      tempObj[item.id] = true
+    })
+    setCheck(tempObj)
+  }
+
+  const [allActiveItemsBtn, setAllActiveItemsBtn] = useState(true)
+
   return (
-    <section className='list'>
-      {todos.map((todo) => {
-        return <TodoItem
-          todo={todo}
-          key={id}
-          onSetActiveItems={onSetActiveItems}
-          edit={edit}
-          check={check}
-          editItem={editItem}
-        />
-      })}
-      {edit && <div className='list-btn'>
-        <div className='checkbox-btn'>
-          {Object.values(check).includes(true) && <>
+      <section className='list'>
+        {todos.map((todo) => {
+          return <TodoItem
+              todo={todo}
+              key={`${edit ? 'edit' : 'view'}-${todo.id}`}
+              onSetActiveItems={onSetActiveItems}
+              edit={edit}
+              check={check}
+              editItem={editItem}
+              setAllActiveItemsBtn={setAllActiveItemsBtn}
+              allActiveItemsBtn={allActiveItemsBtn}
+          />
+        })}
+        {edit && <div className='list-btn'>
+          <div className='checkbox-btn'>
+
             <button
-                   onClick={() => setCheck({})}
-            >сбросить
+                onClick={() => {
+                  onSetAllActiveItems();
+                  setAllActiveItemsBtn(!allActiveItemsBtn)
+                }}
+            >выделить все
             </button>
+
+            {Object.values(check).includes(true) && <>
+
+              <button
+                  onClick={() => {
+                    setCheck({});
+                    setAllActiveItemsBtn(true)
+                  }}
+              >сбросить
+              </button>
+
+              <button
+                  onClick={() => {
+                    deleteItem(Object.keys(check));
+                    setCheck({})
+                  }}
+              >удалить
+              </button>
+            </>}
+          </div>
+          <div className='edit-btn'>
             <button
-                   onClick={() => {
-                     deleteItem(Object.keys(check));
-                     setCheck({})
-                   }}
-            >удалить
+                onClick={addItem}
+            >добавить
             </button>
-          </>}
-        </div>
-        <div className='edit-btn'>
-          <button
-                 onClick={addItem}
-          >добавить
-          </button>
-        </div>
-      </div>}
-    </section>
+          </div>
+        </div>}
+      </section>
   )
 }
 
 TodoList.propTypes = {
   todos: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onSetActiveItems: PropTypes.func.isRequired,
+  onSetActiveItems: PropTypes.func,
   editItem: PropTypes.func.isRequired,
   deleteItem: PropTypes.func.isRequired,
   addItem: PropTypes.func.isRequired

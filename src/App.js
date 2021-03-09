@@ -1,11 +1,8 @@
 import React, {useState} from 'react'
 import TodoList from './Todo/TodoList'
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route, NavLink, Redirect } from 'react-router-dom'
 
 function App() {
-
-  const [currentPath, setCurrentPath] = useState('default')
-  console.log(currentPath)
 
   const [todos, setTodos] = useState(
     [
@@ -27,32 +24,36 @@ function App() {
     ])
 
   function editItem({id, title, content}) {
-    setTodos
-      (todos.map(todo => {
-        if (todo.id === id) {
-          todo.title = title
-          todo.content = content
-        }
-        return todo
-      })
-    )
+    const dataIndex = todos.findIndex(item=>item.id === id)
+    setTodos([...todos.slice(0, dataIndex), {id, title, content}, ...todos.slice(dataIndex + 1)])
+
+    // setTodos
+    //   (todos.map(todo => {
+    //     if (todo.id === id) {
+    //       todo.title = title
+    //       todo.content = content
+    //     }
+    //     return todo
+    //   })
+    // )
   }
 
   function deleteItem(ids) {
-    console.log(ids)
-    let temp = []
-    todos.forEach(todo => {
-      if ( !ids.includes(todo.id)) {
-        temp.push(todo)
-        console.log(todo.id, ids.includes(todo.id))
-      }}
-    )
-    setTodos(temp)
+    if (Object.values(ids).length === 1) {
+      const dataIndex = todos.findIndex(item => item.id === Object.values(ids)[0])
+      setTodos([...todos.slice(0, dataIndex), ...todos.slice(dataIndex + 1)])
+    } else {
+      let temp = []
+      todos.forEach(todo => {
+            if (!ids.includes(todo.id)) {
+              temp.push(todo)
+            }
+      })
+      setTodos(temp)
+    }
   }
 
   function addItem() {
-    let tempItems = todos
-    console.log(tempItems)
     setTodos([...todos, {id: Math.random().toString(36).substr(2, 10), title: 'default', content: 'default'}]
     )
   }
@@ -64,22 +65,22 @@ function App() {
           Fusionsoft test-task
         </h1>
         <div className='pages-link'>
-          <Link className={`link ${currentPath === 'view' ? 'link-active' : ''}`} to='/'>
+          <NavLink to='/view' className='link' activeClassName='link-active'>
             lorems-readonly
-          </Link>
-          <Link className={`link ${currentPath === 'edit' ? 'link-active' : ''}`} to='/edit'>
+          </NavLink>
+          <NavLink to='/edit' className='link' activeClassName='link-active'>
             lorems-edit
-          </Link>
+          </NavLink>
         </div>
         <Switch>
           <Redirect exact from='/' to='/view'/>
+          <Redirect exact from='/index.html' to='/view'/>
           <Route exact path='/view'>
             <TodoList
                      todos={todos}
                      editItem={editItem}
                      deleteItem={deleteItem}
                      addItem={addItem}
-                     setCurrentPath={setCurrentPath}
                      edit={false}
             />
           </Route>
@@ -89,7 +90,6 @@ function App() {
                      editItem={editItem}
                      deleteItem={deleteItem}
                      addItem={addItem}
-                     setCurrentPath={setCurrentPath}
                      edit={true}
             />
           </Route>

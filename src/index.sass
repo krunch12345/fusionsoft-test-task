@@ -54,28 +54,39 @@ code
       flex-direction: column
 
 .item
-  min-height: 4rem
+  //min-height: 4rem
   border: 2px solid gray
   border-radius: 4px
   padding: .5rem
   box-sizing: border-box
   display: flex
   justify-content: space-between
-  align-items: center
+  //align-items: center
+  & .checkbox-item
+    margin-right: 10px
+    margin-top: 6px
 
 .item-text
-  width: 76%
+  width: 100%
   font-size: 16px
   display: flex
-  justify-content: space-between
+  justify-content: flex-start
   //flex-direction: column
-  align-items: center
+  align-items: flex-start
   & .item-title
-    width: 30%
+    width: 7rem
     font-size: 24px
-    //padding-right: 2rem
   & .item-description
     display: none
+
+.details-description
+  width: 80%
+  & .summary-title
+    padding-top: 4px
+    outline: none
+  & .summary-description
+    padding-top: .5em
+
 
 .show-desk
   display: block
@@ -84,6 +95,7 @@ code
   width: 18%
   display: flex
   flex-direction: column
+  margin-top: 2px
 
 .btn
   height: 20px
